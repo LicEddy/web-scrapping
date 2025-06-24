@@ -2,4 +2,5 @@
 *.csv
 .venv/
 __pycache__/
-.env
+*.env
+*.json

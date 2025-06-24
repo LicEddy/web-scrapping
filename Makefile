@@ -15,5 +15,5 @@ COMMIT_MESSAGE = "Some changes"
 
 push:
 	git add .
-	git commit -m "$(COMMIT_MESSAGE)"
+	git commit -m "$(message)"
 	git push -u origin $(BRANCH)
