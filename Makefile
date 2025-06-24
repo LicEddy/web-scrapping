@@ -9,3 +9,11 @@ freeze:
 
 test:
 	python titles.py
+
+BRANCH = main
+COMMIT_MESSAGE = "Some changes"
+
+push:
+	git add .
+	git commit -m "$(COMMIT_MESSAGE)"
+	git push -u origin $(BRANCH)
