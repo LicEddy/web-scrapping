@@ -391,9 +391,9 @@ def main_selenium_scraper():
             
             # Print summary
             print(f"\nSUMMARY:")
-            print(f"   • Total articles: {len(all_articles)}")
-            print(f"   • Categories: {', '.join(categories)}")
-            print(f"   • File: {filename}")
+            print(f"   • Total articles: {len(df)}")
+            print(f"   • Categories: {', '.join(df['Category'].unique())}")
+            print(f"   • File: {output_file}")
             
             # Show category breakdown
             category_counts = df['Category'].value_counts()

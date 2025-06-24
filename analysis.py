@@ -206,8 +206,11 @@ class ArticleAnalyzer:
         Process the entire CSV file and generate enriched analysis
         """
         # Use environment variables if paths not provided
-        input_csv_path = input_csv_path or os.getenv('INPUT_CSV_PATH', 'scraped_articles.csv')
-        output_csv_path = output_csv_path or os.getenv('OUTPUT_CSV_PATH', 'analysis_summary.csv')
+        # input_csv_path = input_csv_path or os.getenv('INPUT_CSV_PATH', os.path.join('data', 'scraped_freshproduce_data.csv'))
+        input_csv_path = 'data/scraped_freshproduce_data.csv'
+
+        # output_csv_path = output_csv_path or os.getenv('OUTPUT_CSV_PATH', 'analysis_summary.csv')
+        output_csv_path = 'data/analysis_summary.csv'
         
         try:
             # Read the CSV file

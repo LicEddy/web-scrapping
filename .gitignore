@@ -1,9 +1,10 @@
 *.html
-scrape_data/
-csv_temp/
-html_temp/
+scrape_data/*
+csv_temp/*
+html_temp/*
 .venv/
 __pycache__/
 *.env
 *.json
 *_legacy.py
+./analysis_summary.csv
