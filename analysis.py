@@ -277,13 +277,16 @@ class ArticleAnalyzer:
                 
                 # Save progress every 5 articles
                 if (index + 1) % 5 == 0:
-                    temp_filename = f"temp_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{output_csv_path}"
+                    os.makedirs("csv_temp", exist_ok=True)
+                    temp_filename = os.path.join("csv_temp", f"temp_{datetime.now().strftime('%Y%m%d_%H%M%S')}_{os.path.basename(output_csv_path)}")
                     df.to_csv(temp_filename, index=False)
                     logger.info(f"Progress saved: {index + 1} articles processed to {temp_filename}")
             
-            # Save final results
-            df.to_csv(output_csv_path, index=False)
-            logger.info(f"Analysis complete! Results saved to {output_csv_path}")
+            # Ensure data directory exists and save final results
+            os.makedirs('data', exist_ok=True)
+            final_output_path = os.path.join('data', os.path.basename(output_csv_path))
+            df.to_csv(final_output_path, index=False)
+            logger.info(f"Analysis complete! Results saved to {final_output_path}")
             logger.info(f"Successfully processed {successful_count}/{total_articles} articles")
             
             # Display sample results

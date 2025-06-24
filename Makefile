@@ -1,8 +1,11 @@
 install:
 	pip install --upgrade pip \
 		&& pip install -r requirements.txt
-titles:
-	python main.py
+scrape:
+	python scrapper.py
+
+analyze:
+	python analysis.py
 
 freeze:
 	pip freeze > requirements.txt
@@ -17,3 +20,5 @@ push:
 	git add .
 	git commit -m "$(message)"
 	git push -u origin $(BRANCH)
+
+run: scrape analyze

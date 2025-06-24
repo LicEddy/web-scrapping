@@ -1,9 +1,3 @@
-"""
-Selenium-based scraper for JavaScript-heavy sites.
-Optimized for freshproduce.com based on actual HTML structure.
-FIXED VERSION - handles both 'genericpage' and 'resourcedetailpage' articles
-"""
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,13 +6,11 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 import pandas as pd
 import time
+import os
 
 def setup_driver():
     """Setup Chrome driver with appropriate options"""
     chrome_options = Options()
-    
-    # Uncomment the next line if you want headless mode (no browser window)
-    # chrome_options.add_argument("--headless")
     
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
@@ -35,7 +27,6 @@ def scrape_category_with_selenium(driver, category):
     """
     Scrape articles from a category page using Selenium.
     Optimized for freshproduce.com HTML structure.
-    FIXED: Now handles both 'genericpage' and 'resourcedetailpage' tiles
     
     Args:
         driver: Selenium WebDriver instance
@@ -137,9 +128,11 @@ def scrape_category_with_selenium(driver, category):
     
     # Save page source for debugging
     try:
-        with open(f"{category}_page_debug.html", "w", encoding="utf-8") as f:
+        os.makedirs("html_temp", exist_ok=True)
+        debug_file = os.path.join("html_temp", f"{category}_page_debug.html")
+        with open(debug_file, "w", encoding="utf-8") as f:
             f.write(driver.page_source)
-        print(f"Saved debug HTML to {category}_page_debug.html")
+        print(f"Saved debug HTML to {debug_file}")
     except Exception as e:
         print(f"Could not save debug HTML: {e}")
     
@@ -163,9 +156,9 @@ def scrape_category_with_selenium(driver, category):
             # Check if it's either genericpage or resourcedetailpage
             if "genericpage" in class_list or "resourcedetailpage" in class_list:
                 valid_articles.append(element)
-                print(f"  ✓ Valid article tile")
+                print("Valid article tile")
             else:
-                print(f"  ✗ Skipping tile (not an article)")
+                print("Skipping tile (not an article)")
         
         article_elements = valid_articles
         print(f"Found {len(article_elements)} valid article elements")
@@ -235,9 +228,9 @@ def scrape_category_with_selenium(driver, category):
                         continue
                     
                     unique_articles[url] = article_data
-                    print(f"✓ Successfully extracted article {i}: {article_data['Title']}")
+                    print(f"Successfully extracted article {i}: {article_data['Title']}")
                 else:
-                    print(f"✗ Skipping article {i} - missing essential data")
+                    print(f"Skipping article {i} - missing essential data")
                 
             except Exception as e:
                 print(f"Error processing article {i}: {e}")
@@ -255,7 +248,9 @@ def scrape_category_with_selenium(driver, category):
                 # Save progress after each article
                 df_temp = pd.DataFrame(articles_list[:i])
                 if not df_temp.empty:
-                    df_temp.to_csv(f'{category}_temp_progress.csv', index=False)
+                    os.makedirs("csv_temp", exist_ok=True)
+                    temp_file = os.path.join("csv_temp", f"{category}_temp_progress.csv")
+                    df_temp.to_csv(temp_file, index=False)
                 
             except Exception as e:
                 print(f"Error getting full content for {article.get('URL', 'unknown')}: {e}")
@@ -376,7 +371,7 @@ def main_selenium_scraper():
             df = df[expected_columns]
             
             # Clean data before saving
-            print("🧹 Cleaning data...")
+            print("Cleaning data...")
             for col in df.columns:
                 if df[col].dtype == 'object':
                     df[col] = df[col].astype(str)  # Convert to string
@@ -385,16 +380,14 @@ def main_selenium_scraper():
                     df[col] = df[col].str.replace('\r', ' ')  # Replace carriage returns
                     df[col] = df[col].str.strip()  # Remove leading/trailing whitespace
             
-            # Save to CSV
-            filename = 'scraped_freshproduce_data.csv'
-            df.to_csv(filename, 
-                     index=False, 
-                     encoding='utf-8',
-                     quoting=1,  # QUOTE_ALL
-                     quotechar='"',
-                     escapechar='\\')
+            # Ensure data directory exists
+            os.makedirs('data', exist_ok=True)
             
-            print(f"Saved {len(all_articles)} articles to {filename}")
+            # Save the combined data to a CSV file in the data directory
+            output_file = os.path.join('data', 'scraped_freshproduce_data.csv')
+            df.to_csv(output_file, index=False, encoding='utf-8', quoting=1, quotechar='"', escapechar='\\')
+            
+            print(f"\nScraping complete! Data saved to {output_file}")
             
             # Print summary
             print(f"\nSUMMARY:")
